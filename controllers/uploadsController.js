@@ -19,7 +19,7 @@ const uploadProductImage = async (req, res) => {
         use_filename: true,
         folder: 'file-uploader'
     });
-    fs.unlinkSync(productImage.tempFilePath);
+    fs.rmSync(productImage.tempFilePath);
     res.status(StatusCodes.OK).json({ image: { path: result.secure_url } });
 };
 

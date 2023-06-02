@@ -3,6 +3,10 @@ require('express-async-errors');
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const cloudinary = require('cloudinary').v2;
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const rateLimiter = require('express-rate-limit');
+const cors = require('cors');
 const connectDB = require('./database/connect');
 const defaultHandler = require('./middlewares/default-handler');
 const errorHandler = require('./middlewares/error-handler');
@@ -15,6 +19,16 @@ cloudinary.config({
 });
 
 const app = express();
+
+app.use(rateLimiter({
+    windowMs: 15*60*1000,
+    max: 100
+}));
+app.set('trust proxy', 1);
+app.use(helmet());
+app.use(xss());
+app.use(cors());
+
 app.use(express.json());
 app.use(fileUpload({ useTempFiles: true }));
 app.use('/api/v1/products', productsRouter);
